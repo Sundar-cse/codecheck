@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeCheck — Blind Coding Challenge</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <span class="brand">⚡ CodeCheck</span>
+      <span class="tag">Blind Coding Challenge</span>
+    </div>
+    <div class="stats">
+      <span id="difficulty">Easy</span>
+      <span id="timer">10:00</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="card problem-card">
+      <div class="card-head">
+        <span class="eyebrow">CHALLENGE <span id="challengeNo">1</span></span>
+        <button id="newChallenge" class="ghost">New Challenge</button>
+      </div>
+      <h1 id="title">Reverse a String</h1>
+      <p id="description">Write a function that returns the given string in reverse order.</p>
+
+      <div class="example">
+        <div><b>Example</b></div>
+        <div><span>Input:</span> <code id="exampleInput">"hello"</code></div>
+        <div><span>Output:</span> <code id="exampleOutput">"olleh"</code></div>
+      </div>
+
+      <div class="rules">
+        <b>Blind mode</b>
+        <ul>
+          <li>Hidden test cases are used when you submit.</li>
+          <li>Write JavaScript only. Function name is shown in the editor.</li>
+          <li>Your score is based on passed tests and remaining time.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card editor-card">
+      <div class="card-head">
+        <div>
+          <span class="eyebrow">JAVASCRIPT</span>
+          <span class="hint">Complete the function</span>
+        </div>
+        <button id="resetCode" class="ghost">Reset</button>
+      </div>
+      <textarea id="editor" spellcheck="false"></textarea>
+      <div class="editor-foot">
+        <button id="runSample" class="secondary">Run Sample</button>
+        <button id="submit" class="primary">Submit Challenge</button>
+      </div>
+    </section>
+
+    <section id="result" class="card result-card hidden">
+      <div class="card-head">
+        <span class="eyebrow">RESULT</span>
+        <span id="score">0 pts</span>
+      </div>
+      <h2 id="resultTitle">Ready?</h2>
+      <p id="resultText"></p>
+      <div id="tests"></div>
+    </section>
+  </main>
+
+  <footer>
+    CodeCheck • Built for practice • <span>Blind coding mode</span>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
