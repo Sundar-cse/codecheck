@@ -1,51 +1,161 @@
-const challenges=[
- {title:"Reverse a String",difficulty:"Easy",time:10,fn:"reverseString",description:"Write a function that returns the given string in reverse order.",input:'"hello"',output:'"olleh"',tests:[["hello","olleh"],["CodeCheck","kcehCedoC"],["12345","54321"]],starter:`function reverseString(str) {
-  // return the reversed string
-}`},
- {title:"Sum of an Array",difficulty:"Easy",time:8,fn:"sumArray",description:"Write a function that returns the sum of all numbers in an array.",input:"[2, 4, 6, 8]",output:"20",tests:[[[2,4,6,8],20],[[10,-2,5],13],[[0,0,7],7]],starter:`function sumArray(arr) {
-  // return the sum
-}`},
- {title:"Count Vowels",difficulty:"Easy",time:8,fn:"countVowels",description:"Write a function that returns how many vowels (a, e, i, o, u) appear in a string.",input:'"programming"',output:"3",tests:[["programming",3],["HELLO",2],["sky",0]],starter:`function countVowels(str) {
-  // return the number of vowels
-}`}
-];
+const CHALLENGE = {
+  title: "Factors & Sum",
+  description: "Given a positive integer N, write a program to print all factors of N in ascending order and calculate their sum.",
+  sampleInput: "12",
+  sampleOutput: "1 2 3 4 6 12\\n28",
+  timeLimit: 15 * 60,
+  tests: [1, 2, 12, 17, 25, 36, 100, 999, 1000, 9973]
+};
 
-let index=0,remaining=600,timerId=null,started=false;
-const $=id=>document.getElementById(id);
-function loadChallenge(i=0){
-  index=i%challenges.length; const c=challenges[index];
-  $("challengeNo").textContent=index+1;$("title").textContent=c.title;$("description").textContent=c.description;
-  $("difficulty").textContent=c.difficulty;$("exampleInput").textContent=c.input;$("exampleOutput").textContent=c.output;
-  $("editor").value=c.starter;$("result").classList.add("hidden");$("tests").innerHTML="";$("score").textContent="0 pts";
-  remaining=c.time*60;started=false;clearInterval(timerId);updateTimer();
+const JUDGE_URL = "https://ce.judge0.com/submissions?base64_encoded=false&wait=true";
+let remaining = CHALLENGE.timeLimit;
+let timerId = null;
+let started = false;
+let submitted = false;
+
+const $ = id => document.getElementById(id);
+
+function updateTimer() {
+  const m = Math.floor(remaining / 60);
+  const s = remaining % 60;
+  $("timer").textContent = m + ":" + String(s).padStart(2, "0");
+  $("timer").classList.toggle("urgent", remaining <= 60);
 }
-function updateTimer(){const m=Math.floor(remaining/60),s=remaining%60;$("timer").textContent=m+":"+String(s).padStart(2,"0")}
-function startTimer(){if(started)return;started=true;timerId=setInterval(()=>{remaining--;updateTimer();if(remaining<=0){clearInterval(timerId);submit(true)}},1000)}
-function execute(code,fn,input){
-  try{const runner=new Function(code+"\nreturn "+fn+";");
-    const f=runner(); if(typeof f!=="function") throw new Error("Function not found: "+fn);
-    return {ok:true,value:f(input)};
-  }catch(e){return {ok:false,error:e.message}}
+
+function startTimer() {
+  if (started || submitted) return;
+  started = true;
+  $("statusNote").textContent = "Timer started. Trust your memory — the editor is supposed to stay blank.";
+  timerId = setInterval(() => {
+    remaining--;
+    updateTimer();
+    if (remaining <= 0) {
+      clearInterval(timerId);
+      submitChallenge(true);
+    }
+  }, 1000);
 }
-function runTests(showSample=false){
-  startTimer();const c=challenges[index],code=$("editor").value;
-  if(showSample){
-    const t=execute(code,c.fn,JSON.parse(c.input));
-    $("result").classList.remove("hidden");$("resultTitle").textContent=t.ok?"Sample passed":"Sample error";
-    $("resultText").textContent=t.ok?"Output: "+JSON.stringify(t.value):t.error;
-    $("tests").innerHTML="";return;
+
+function normalizeOutput(value) {
+  return String(value ?? "").replace(/\\r/g, "").trim().split(/\\s+/).join(" ");
+}
+
+function expectedOutput(n) {
+  const factors = [];
+  let sum = 0;
+  for (let i = 1; i <= n; i++) {
+    if (n % i === 0) { factors.push(i); sum += i; }
   }
-  let passed=0,html="";
-  c.tests.forEach((t,n)=>{const r=execute(code,c.fn,t[0]);const ok=r.ok&&JSON.stringify(r.value)===JSON.stringify(t[1]);if(ok)passed++;
-    html+=`<div class="test ${ok?"pass":"fail"}"><b>Test ${n+1}: ${ok?"✓ Passed":"✕ Failed"}</b><small>${ok?"Hidden test passed":(r.error||"Output did not match")}</small></div>`;});
-  clearInterval(timerId);const score=Math.round((passed/c.tests.length)*100+(remaining/(c.time*60))*20);
-  $("result").classList.remove("hidden");$("resultTitle").textContent=passed===c.tests.length?"Challenge complete!":"Keep practicing";
-  $("resultText").textContent=`${passed}/${c.tests.length} hidden tests passed.`;
-  $("score").textContent=Math.max(0,score)+" pts";$("tests").innerHTML=html;
+  return factors.join(" ") + " " + sum;
 }
-$("editor").addEventListener("focus",startTimer);
-$("runSample").addEventListener("click",()=>runTests(true));
-$("submit").addEventListener("click",()=>runTests(false));
-$("resetCode").addEventListener("click",()=>{$("editor").value=challenges[index].starter});
-$("newChallenge").addEventListener("click",()=>loadChallenge(index+1));
-loadChallenge();
+
+async function execute(sourceCode, languageId, input) {
+  try {
+    const response = await fetch(JUDGE_URL, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        language_id: Number(languageId),
+        source_code: sourceCode,
+        stdin: String(input),
+        cpu_time_limit: 2,
+        wall_time_limit: 4,
+        memory_limit: 128000
+      })
+    });
+    if (!response.ok) throw new Error("Judge service returned HTTP " + response.status);
+    return await response.json();
+  } catch (error) {
+    return {status: {id: -1, description: "Judge unavailable"}, stderr: error.message};
+  }
+}
+
+function renderTest(index, passed, detail) {
+  return '<div class="test ' + (passed ? "pass" : "fail") + '"><b>Test ' + (index + 1) + ': ' + (passed ? "✓ Passed" : "✕ Failed") + '</b><small>' + detail + '</small></div>';
+}
+
+async function runSample() {
+  const code = $("editor").value;
+  if (!code.trim()) {
+    showResult("Nothing to run", "The blind editor is empty. Start typing your solution first.", "0 / 100", "");
+    return;
+  }
+  startTimer();
+  $("runSample").disabled = true;
+  $("submit").disabled = true;
+  showResult("Running sample…", "Checking your program with N = 12.", "—", "");
+  const result = await execute(code, $("language").value, CHALLENGE.sampleInput);
+  $("runSample").disabled = false;
+  $("submit").disabled = false;
+  if (result.status?.id === 3) {
+    const actual = normalizeOutput(result.stdout);
+    const expected = normalizeOutput(CHALLENGE.sampleOutput);
+    showResult(actual === expected ? "Sample passed ✓" : "Sample output differs",
+      "Expected: " + expected + "\\nGot: " + (actual || "(no output)"), "SAMPLE", "");
+  } else {
+    showResult("Sample failed", result.compile_output || result.stderr || result.status?.description || "Execution failed.", "SAMPLE", "");
+  }
+}
+
+async function submitChallenge(timeExpired = false) {
+  if (submitted) return;
+  const code = $("editor").value;
+  if (!code.trim() && !timeExpired) {
+    showResult("Nothing to submit", "Type your solution before submitting.", "0 / 100", "");
+    return;
+  }
+
+  submitted = true;
+  clearInterval(timerId);
+  $("submit").disabled = true;
+  $("runSample").disabled = true;
+  $("language").disabled = true;
+  $("clearCode").disabled = true;
+  showResult(timeExpired ? "Time's up" : "Judging…", "Running 10 hidden test cases. One passed case = 10 points.", "—", "");
+
+  let passed = 0;
+  let html = "";
+  for (let i = 0; i < CHALLENGE.tests.length; i++) {
+    const input = CHALLENGE.tests[i];
+    const result = await execute(code, $("language").value, input);
+    if (result.status?.id === 3) {
+      const actual = normalizeOutput(result.stdout);
+      const expected = normalizeOutput(expectedOutput(input));
+      const ok = actual === expected;
+      if (ok) passed++;
+      html += renderTest(i, ok, ok ? "Hidden test passed" : "Output did not match");
+    } else {
+      const detail = result.compile_output || result.stderr || result.status?.description || "Execution failed";
+      html += renderTest(i, false, String(detail).slice(0, 140));
+    }
+  }
+
+  const score = passed * 10;
+  $("result").classList.remove("hidden");
+  $("resultTitle").textContent = score === 100 ? "Perfect score! 🎯" : "Challenge complete";
+  $("resultText").textContent = passed + "/10 hidden tests passed. Score: " + score + "/100. " + (timeExpired ? "The time limit was reached." : "Time is only a tiebreaker.");
+  $("score").textContent = score + " / 100";
+  $("tests").innerHTML = html;
+}
+
+function showResult(title, text, score, tests) {
+  $("result").classList.remove("hidden");
+  $("resultTitle").textContent = title;
+  $("resultText").textContent = text;
+  $("score").textContent = score;
+  $("tests").innerHTML = tests;
+}
+
+$("editor").addEventListener("focus", startTimer);
+$("editor").addEventListener("input", () => $("blindOverlay").classList.add("typing"));
+["paste", "cut", "copy", "drop"].forEach(eventName => $("editor").addEventListener(eventName, event => event.preventDefault()));
+$("editor").addEventListener("contextmenu", event => event.preventDefault());
+$("editor").addEventListener("keydown", event => {
+  if ((event.ctrlKey || event.metaKey) && ["v", "c", "x"].includes(event.key.toLowerCase())) event.preventDefault();
+});
+$("runSample").addEventListener("click", runSample);
+$("submit").addEventListener("click", () => submitChallenge(false));
+$("clearCode").addEventListener("click", () => {
+  if (!submitted) { $("editor").value = ""; $("editor").focus(); }
+});
+updateTimer();
