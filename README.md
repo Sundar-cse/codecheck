@@ -1,16 +1,1 @@
-# CodeCheck — Blind Coding Challenge
-
-A simple browser-based JavaScript blind coding challenge.
-
-## Features
-- Timed challenges
-- Hidden test cases
-- Sample runner
-- Automatic score
-- Multiple challenges
-- Mobile-friendly UI
-
-## Run
-Open `index.html` in a browser, or enable GitHub Pages for the repository.
-
-> This first version runs JavaScript in the browser for a fun self-testing project. Because the test logic is client-side, it is not suitable for secure competitive programming yet. A future version can use a real sandboxed code-execution backend.
+# CodeCheck — Blind Coding Challenge\n\nCodeCheck is a browser-based blind coding challenge for a college technical event.\n\n## Current challenge\n\nGiven a positive integer N, print all factors of N in ascending order and calculate their sum.\n\nExample for 12:\n- Factors: 1 2 3 4 6 12\n- Sum: 28\n\nParticipants choose C, C++, Java, or Python and write a complete program.\n\n## Scoring\n\n- 10 hidden test cases\n- 10 points per passed test\n- Maximum: 100 points\n- A failed case does not automatically give zero\n- Submission time is used only as a tiebreaker\n\n## Blind mode\n\nThe textarea keeps the code in the browser but makes the characters invisible while typing. Copy, cut, paste, drag/drop, and context-menu actions are blocked in the UI.\n\n## Execution\n\nThe frontend currently uses Judge0 CE for sandboxed compilation/execution. Judge0 documents C, C++, Java, and Python language IDs, including 50, 54, 62, and 71.\n\nImportant: this is still a static GitHub Pages frontend. Test inputs and expected outputs are therefore discoverable by someone inspecting browser source. For a serious competition, move test cases and the Judge0 call behind a serverless/backend endpoint and keep any private credentials there.\n\n## Run\n\nEnable GitHub Pages for the repository and open the published site.\n
