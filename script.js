@@ -2,7 +2,7 @@ const CHALLENGE = {
   title: "Factors & Sum",
   description: "Given a positive integer N, write a program to print all factors of N in ascending order and calculate their sum.",
   sampleInput: "12",
-  sampleOutput: "1 2 3 4 6 12\\n28",
+  sampleOutput: "1 2 3 4 6 12\n28",
   timeLimit: 15 * 60,
   tests: [1, 2, 12, 17, 25, 36, 100, 999, 1000, 9973]
 };
@@ -37,7 +37,7 @@ function startTimer() {
 }
 
 function normalizeOutput(value) {
-  return String(value ?? "").replace(/\\r/g, "").trim().split(/\\s+/).join(" ");
+  return String(value ?? "").replace(/\r/g, "").trim().split(/\s+/).join(" ");
 }
 
 function expectedOutput(n) {
