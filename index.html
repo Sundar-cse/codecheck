@@ -3,53 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CodeCheck — Blind Coding Challenge</title>
+<title>BUG-404 | Debugging Challenge</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="topbar">
-  <div><span class="brand">⚡ CodeCheck</span><span class="tag">Blind Coding Challenge</span></div>
-  <div class="stats"><span id="difficulty">Medium</span><span id="timer">15:00</span></div>
+  <div><a class="brand" href="./">🐞 BUG-404</a><span class="tag">Debugging Challenge</span></div>
+  <a class="paper-link" href="question-paper.html" target="_blank" rel="noopener">Print rules ↗</a>
 </header>
 <main class="layout">
-<section class="card problem-card">
-  <div class="card-head"><span class="eyebrow">CHALLENGE <span id="challengeNo">1</span> / 1</span><span class="same-question">SAME FOR EVERYONE</span></div>
-  <h1 id="title">Factors & Sum</h1>
-  <p id="description">Given a positive integer N, write a program to print all factors of N in ascending order and calculate their sum.</p>
-  <div class="example"><div><b>Example</b></div><div><span>Input:</span> <code id="exampleInput">12</code></div><div><span>Output:</span> <code id="exampleOutput">1 2 3 4 6 12
-28</code></div></div>
-  <div class="rules"><b>Blind mode rules</b><ul>
-    <li>The code you type is intentionally invisible.</li>
-    <li>No copy, paste, cut, drag-and-drop, or context-menu actions.</li>
-    <li>Choose C, C++, Java, or Python and write a complete program.</li>
-    <li>10 hidden test cases × 10 points each = 100 points.</li>
-    <li>Submission time is used only as a tiebreaker.</li>
-  </ul></div>
-  <div class="status-note" id="statusNote">Click the blind editor to start the 15-minute timer.</div>
-</section>
-<section class="card editor-card">
-  <div class="card-head">
-    <div><label class="eyebrow" for="language">LANGUAGE</label>
-      <select id="language" aria-label="Programming language">
-        <option value="50">C</option><option value="54">C++</option><option value="62">Java</option><option value="71">Python</option>
-      </select>
+  <section class="card participant-card">
+    <div class="eyebrow">PARTICIPANT DETAILS</div>
+    <div class="form-grid">
+      <label>Name<input id="participantName" autocomplete="name" placeholder="Enter your name" required></label>
+      <label>Registration number<input id="participantReg" placeholder="Enter your reg. no." required></label>
     </div>
-    <span class="blind-badge">● BLIND</span>
-  </div>
-  <div class="blind-editor-wrap">
-    <textarea id="editor" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Blind code editor"></textarea>
-    <div class="blind-overlay" id="blindOverlay"><span>TYPE HERE</span><small>Your code is hidden while you type.</small></div>
-  </div>
-  <div class="editor-foot">
-    <button id="clearCode" class="secondary">Clear</button><button id="runSample" class="secondary">Run Sample</button><button id="submit" class="primary">Submit Challenge</button>
-  </div>
-</section>
-<section id="result" class="card result-card hidden">
-  <div class="card-head"><span class="eyebrow">RESULT</span><span id="score">0 / 100</span></div>
-  <h2 id="resultTitle">Ready?</h2><p id="resultText"></p><div id="tests"></div>
-</section>
+    <label for="language">Choose one programming language</label>
+    <select id="language">
+      <option value="50">C</option><option value="54">C++</option><option value="71">Python</option><option value="62">Java</option>
+    </select>
+    <p class="small-note">Use the same language for both rounds. Your final code is saved on this device for the organizer to export.</p>
+  </section>
+
+  <section class="card problem-card">
+    <div class="round-tabs" role="tablist" aria-label="Challenge round">
+      <button class="round-tab active" id="round1Tab" data-round="1" role="tab" aria-selected="true">Round 1 · Easy · 10 marks</button>
+      <button class="round-tab" id="round2Tab" data-round="2" role="tab" aria-selected="false">Round 2 · Hard · 20 marks</button>
+    </div>
+    <div class="card-head"><span class="eyebrow" id="roundLabel">ROUND 1 / EASY</span><span class="timer" id="timer">05:00</span></div>
+    <h1 id="challengeTitle">Sum of Two Numbers</h1>
+    <p id="challengeDescription">This program should print the sum of a and b. Find and fix the bug.</p>
+    <div class="example"><b>Expected output</b><pre id="expectedOutput">30</pre></div>
+    <div class="rules"><b>Instructions</b><ul><li>Correct the buggy program below.</li><li>Click <b>Run Code</b> to compile and execute it.</li><li>Use <b>Submit Round</b> when you're ready. You cannot edit a round after submitting it.</li><li>Both rounds must be submitted before time is over.</li></ul></div>
+  </section>
+
+  <section class="card editor-card">
+    <div class="card-head"><label class="eyebrow" for="editor">BUGGY CODE — EDIT IT TO FIX THE ERROR</label><span class="language-chip" id="languageChip">C</span></div>
+    <textarea id="editor" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Code editor"></textarea>
+    <div class="editor-foot">
+      <button id="resetCode" class="secondary">Reset code</button>
+      <button id="runCode" class="secondary">Run code</button>
+      <button id="submitRound" class="primary">Submit round</button>
+    </div>
+    <div class="console"><div class="console-head">CONSOLE <span id="runStatus">Ready</span></div><pre id="consoleOutput">Run your corrected code to see the output.</pre></div>
+  </section>
+
+  <section class="card summary-card">
+    <div class="card-head"><span class="eyebrow">YOUR PROGRESS</span><strong id="scoreTotal">0 / 30</strong></div>
+    <div class="progress-row"><span>Round 1 — Easy</span><strong id="round1Score">Not submitted</strong></div>
+    <div class="progress-row"><span>Round 2 — Hard</span><strong id="round2Score">Not submitted</strong></div>
+    <p class="small-note">This prototype saves submissions in this browser only. Use the organizer export on this device to download records as CSV.</p>
+  </section>
+
+  <section class="card admin-card">
+    <div class="card-head"><span class="eyebrow">ORGANIZER TOOLS</span><span class="small-note">Organizer use only</span></div>
+    <p>Download submissions stored on this device. Keep this button for the organizer; participants should not access the export.</p>
+    <div class="editor-foot"><button id="exportCsv" class="secondary">Export submissions (CSV)</button><button id="clearRecords" class="danger-button">Clear local records</button></div>
+    <p id="recordCount" class="small-note">0 stored submissions on this device.</p>
+  </section>
 </main>
-<footer>CodeCheck • College Technical Event • <span>Blind coding mode</span></footer>
+<footer>BUG-404 · College Technical Symposium · Debug smart. Fix bugs.</footer>
 <script src="script.js"></script>
 </body>
 </html>
